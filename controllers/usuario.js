@@ -5,21 +5,21 @@ const { validationResult } = require('express-validator');
 
 
 
-const getUsuario = async(req, res = response) => {
+const getUsuario = async (req, res = response) => {
 
-    const {limite = 5,desde = 0} = req.query;
-    const filtro = {estado: true}
+    const { limite = 5, desde = 0 } = req.query;
+    const filtro = { estado: true }
 
 
-    const [total,usuarios] = await Promise.all([
+    const [total, usuarios] = await Promise.all([
         Usuario.countDocuments(filtro),
         Usuario.find(filtro)
-    .skip(Number(desde))
-    .limit(Number(limite))
+            .skip(Number(desde))
+            .limit(Number(limite))
     ]);
     res.json({
-      total,
-      usuarios
+        total,
+        usuarios
     })
 }
 
@@ -42,13 +42,13 @@ const postUsuario = async (req, res = response) => {
     })
 }
 
-const putUsuario = async(req, res = response) => {
+const putUsuario = async (req, res = response) => {
     const id = req.params.id;
-    const {_id,password,google,correo,...resto} = req.body;
-    if(password){
-         //Encriptar contraseña
-    const salt = bcryptjs.genSaltSync();
-    resto.password = bcryptjs.hashSync(password, salt);
+    const { _id, password, google, correo, ...resto } = req.body;
+    if (password) {
+        //Encriptar contraseña
+        const salt = bcryptjs.genSaltSync();
+        resto.password = bcryptjs.hashSync(password, salt);
     }
 
     const usuario = await Usuario.findByIdAndUpdate(id, resto);
@@ -60,14 +60,15 @@ const putUsuario = async(req, res = response) => {
 
 const deleteUsuario = async (req, res = response) => {
     const id = req.params.id;
-
+    const uid = req.uid;
+    const usuarioAuth = req.usuario;
     //Borrado físico
     //const usuario = await Usuario.findByIdAndDelete(id);
 
-    const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: false });
 
     res.json({
-       usuario
+        usuario
     })
 }
 
